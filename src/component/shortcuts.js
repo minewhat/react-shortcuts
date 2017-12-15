@@ -8,10 +8,6 @@ import helpers from '../helpers'
 export default class extends React.Component {
   static displayName = 'Shortcuts';
 
-  static contextTypes = {
-    shortcuts: PropTypes.object.isRequired,
-  };
-
   static propTypes = {
     children: PropTypes.node,
     handler: PropTypes.func,
@@ -25,6 +21,7 @@ export default class extends React.Component {
     global: PropTypes.bool,
     isolate: PropTypes.bool,
     alwaysFireHandler: PropTypes.bool,
+    shortcuts: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -37,13 +34,14 @@ export default class extends React.Component {
     global: false,
     isolate: false,
     alwaysFireHandler: false,
+    shortcuts: null
   };
 
   componentDidMount() {
     this._onUpdate()
 
     if (this.props.name) {
-      this.context.shortcuts.addUpdateListener(this._onUpdate)
+      this.props.shortcuts.addUpdateListener(this._onUpdate)
     }
   }
 
@@ -51,7 +49,7 @@ export default class extends React.Component {
     this._unbindShortcuts()
 
     if (this.props.name) {
-      this.context.shortcuts.removeUpdateListener(this._onUpdate)
+      this.props.shortcuts.removeUpdateListener(this._onUpdate)
     }
 
     if (this.props.global) {
@@ -199,14 +197,14 @@ export default class extends React.Component {
 
   _onUpdate = () => {
     const shortcutsArr = this.props.name &&
-      this.context.shortcuts.getShortcuts(this.props.name)
+      this.props.shortcuts.getShortcuts(this.props.name)
     this._unbindShortcuts()
     this._bindShortcuts(shortcutsArr || [])
   };
 
   _handleShortcuts = (event, keyName) => {
     if (this.props.name) {
-      const shortcutName = this.context.shortcuts.findShortcutName(
+      const shortcutName = this.props.shortcuts.findShortcutName(
         keyName,
         this.props.name
       )
